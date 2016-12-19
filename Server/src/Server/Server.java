@@ -17,13 +17,7 @@ import java.net.*;
 public class Server {
    // public static final int PORT=50017;
     public static void main(String[] args) throws IOException, ClassNotFoundException{
-        ServerSocket serv=new ServerSocket(50017);
-        while(true){
-            System.out.println("Oczekiwanei na połączenie");
-            Socket sock=serv.accept();
-            
-            new Thread(new ConnectionService(sock)).start();
-        }
+        Clients.WaitForNewClients();
 
      }
 }

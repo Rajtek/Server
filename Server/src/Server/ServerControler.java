@@ -5,10 +5,14 @@
  */
 package Server;
 
+import Shared.Message;
 /**
  *
  * @author Rajtek
  */
 public class ServerControler {
-    
+    public void getMessage(Message m){
+        
+        
+    }
 }

@@ -7,7 +7,6 @@ package Server;
 
 import java.net.Socket;
 import java.io.*;
-import java.net.ConnectException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /**
@@ -27,23 +26,27 @@ public class ConnectionService implements Runnable{
             
             
             //tworzenie strumienia danych pobieranych z gniazda sieciowego
-            BufferedReader inp;
-            inp=new BufferedReader(new InputStreamReader(sock.getInputStream()));
-            //ObjectInputStream  ois = new ObjectInputStream(sock.getInputStream());
+            //BufferedReader inp;
+            //inp=new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            ObjectInputStream  ois = new ObjectInputStream(sock.getInputStream());
             //komunikacja - czytanie danych ze strumienia
             try{
             while(true){
-            String str;
-            str=inp.readLine();
-            System.out.println("<Nadeszlo:> " + str +" "+sock.getRemoteSocketAddress());
-            if(str.equals("exit"))break;
+            Shared.Message a;
+            a=(Shared.Message)ois.readObject();
+            System.out.println("<Nadeszlo:> " + a.getSource() +" "+sock.getRemoteSocketAddress());
+            
             }
             }
             catch(java.net.SocketException e){
                 System.out.println("Klient "+sock.getRemoteSocketAddress()+" rozłączony");
+            } catch (ClassNotFoundException ex) {
+                
             }
+            
             finally{
-                inp.close();               
+                Clients.RemoveClientFromList(sock.getRemoteSocketAddress().toString());
+                ois.close();               
                 sock.close();
                 
                 

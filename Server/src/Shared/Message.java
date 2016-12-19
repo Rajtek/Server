@@ -11,16 +11,14 @@ import java.io.Serializable;
  *
  * @author Rajtek
  */
-public class Player implements Serializable{
-    private String nick;
-    private String password;
-    private int cash;
+public class Message implements Serializable{
+    private String source;
     
-    Player(String nick, String password){
-        this.nick=nick;
-        this.password=password;
+    
+    public Message(String source){
+        this.source=source;
     }
-    public String getNick(){
-        return nick;
+    public String getSource(){
+        return source;
     }
 }

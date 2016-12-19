@@ -9,11 +9,11 @@ package Server;
  *
  * @author Rajtek
  */
-public class Table implements Runnable{
+public class Table implements Runnable {
 
     @Override
     public void run() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

@@ -10,5 +10,5 @@ package Server;
  * @author Rajtek
  */
 public class ServerModel {
-    
+
 }

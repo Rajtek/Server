@@ -12,12 +12,11 @@ import java.net.*;
  *
  * @author Rajtek
  */
-
-
 public class Server {
-   // public static final int PORT=50017;
-    public static void main(String[] args) throws IOException, ClassNotFoundException{
+    // public static final int PORT=50017;
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         Clients.WaitForNewClients();
 
-     }
+    }
 }

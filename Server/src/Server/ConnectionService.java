@@ -5,6 +5,7 @@
  */
 package Server;
 
+import Shared.Message;
 import java.net.Socket;
 import java.io.*;
 import java.util.logging.Level;
@@ -17,14 +18,26 @@ import java.util.logging.Logger;
 public class ConnectionService implements Runnable {
 
     Socket sock;
-
+    ObjectOutputStream oos;
     ConnectionService(Socket clientSocket) {
         this.sock = clientSocket;
     }
-
+    public void sendMessage(String msg){
+        
+        try {
+            oos.writeObject(new Message(msg));
+            System.out.println("Wysyłam: "+ msg );
+        } catch (IOException ex) {
+            System.err.println(ex);
+        }
+            
+        
+    
+    }
     @Override
     public void run() {
         try {
+            oos = new ObjectOutputStream(sock.getOutputStream());
             System.out.println("Nasluchuje: " + sock.getRemoteSocketAddress());
 
             ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
@@ -34,10 +47,11 @@ public class ConnectionService implements Runnable {
                     Shared.Message a;
                     a = (Shared.Message) ois.readObject();
                     System.out.println("<Nadeszlo:> " + a.getSource() + " " + sock.getRemoteSocketAddress());
-
+                    sendMessage("testtesttest");
                 }
             } catch (java.net.SocketException e) {
                 System.out.println("Klient " + sock.getRemoteSocketAddress() + " rozłączony");
+                
             } catch (ClassNotFoundException ex) {
 
             } finally {

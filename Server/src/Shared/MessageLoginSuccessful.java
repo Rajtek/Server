@@ -10,7 +10,14 @@ package Shared;
  * @author Rajtek
  */
 public class MessageLoginSuccessful extends Message{
-    public MessageLoginSuccessful(String source) {
+    Player player;
+    public MessageLoginSuccessful(String source,Player player) {
         super(source);
+        this.player=player;
     }
+
+    public Player getPlayer() {
+        return player;
+    }
+    
 }

@@ -58,7 +58,7 @@ public class ServerControler implements SocketListener{
             if(serverModel.getPlayer(login)==null){
                 serverModel.AddPlayerToList(login);
                 playerMap.AddPlayerToList(source, login);
-                notifyListener(new MessageLoginSuccessful(source),source);
+                notifyListener(new MessageLoginSuccessful(source,serverModel.getPlayer(login)),source);
                 notifyListener(new MessageGetTablesList(source, serverModel.GetTablesList()), source);
             }
             else{

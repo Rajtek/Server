@@ -27,6 +27,11 @@ public class ServerModel {
     
     public ServerModel() {
         tablesMap.put(1, new Table(1, 6, 150));
+        tablesMap.put(2, new Table(2, 2, 1500));
+        for(int i=3; i<30; i++){
+            tablesMap.put(i, new Table(i,2,100));
+        }
+        
     }
     public void AddPlayerToList(String Login) {
         

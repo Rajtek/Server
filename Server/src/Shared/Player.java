@@ -5,22 +5,23 @@
  */
 package Shared;
 
-import java.io.Serializable;
-
 /**
  *
  * @author Rajtek
  */
-public class Player implements Serializable{
-    private String nick;
-    private String password;
+public class Player{
+
+    private String login;
     private int cash;
+
+    public Player(String login) {
+        this.login = login;
+        cash=25000;
+    }
+
+    public String getLogin() {
+        return login;
+    }
     
-    Player(String nick, String password){
-        this.nick=nick;
-        this.password=password;
-    }
-    public String getNick(){
-        return nick;
-    }
+    
 }

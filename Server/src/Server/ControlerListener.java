@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Shared;
+package Server;
 
 /**
  *
  * @author Rajtek
  */
-public class Card {
-
+public interface ControlerListener {
+    public void MessageToSend(Shared.Message msg);
+    
 }

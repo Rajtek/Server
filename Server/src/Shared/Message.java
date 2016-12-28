@@ -7,17 +7,14 @@ package Shared;
 
 import java.io.Serializable;
 
-/**
- *
- * @author Rajtek
- */
+
 public class Message implements Serializable{
-    private String source;
-    
+    private final String source;
     
     public Message(String source){
         this.source=source;
     }
+    
     public String getSource(){
         return source;
     }

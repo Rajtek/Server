@@ -9,6 +9,8 @@ package Shared;
  *
  * @author Rajtek
  */
-public class Card {
-
+public class MessageLoginSuccessful extends Message{
+    public MessageLoginSuccessful(String source) {
+        super(source);
+    }
 }

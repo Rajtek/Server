@@ -8,63 +8,98 @@ package Server;
 import Shared.Message;
 import java.net.Socket;
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- *
- * @author Rajtek
- */
-public class ConnectionService implements Runnable {
 
-    Socket sock;
-    ObjectOutputStream oos;
+public class ConnectionService implements Runnable, ControlerListener {
+    
+    private Socket sock;
+    private ObjectOutputStream oos;
+    private List<SocketListener> listeners = new ArrayList<>();
+
     ConnectionService(Socket clientSocket) {
         this.sock = clientSocket;
     }
-    public void sendMessage(String msg){
+
+    public void sendMessage(String msg) {
         
         try {
             oos.writeObject(new Message(msg));
-            System.out.println("Wysyłam: "+ msg );
+            System.out.println("Wysyłam: " + msg);
         } catch (IOException ex) {
             System.err.println(ex);
         }
-            
         
-    
     }
+    
+    public void sendMessage(Message msg) {
+        
+        try {
+            oos.writeObject(msg);
+            System.out.println("Wysyłam: " + msg.getSource());
+        } catch (IOException ex) {
+            System.err.println(ex);
+        }
+        
+    }
+    
+
+    public void addListener(SocketListener toAdd) {
+        listeners.add(toAdd);
+    }
+    
+    private void notifyListener(Shared.Message msg) {
+        for (SocketListener s : listeners) {
+            s.getMessage(msg);
+        }
+    }
+    
+    private void notifyDisconnect(String client){
+        for (SocketListener s : listeners) {
+            s.disconnected(sock.getRemoteSocketAddress().toString());
+        }
+    }
+    
+
     @Override
     public void run() {
         try {
             oos = new ObjectOutputStream(sock.getOutputStream());
             System.out.println("Nasluchuje: " + sock.getRemoteSocketAddress());
-
+            
             ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
-
+            
             try {
                 while (true) {
                     Shared.Message a;
                     a = (Shared.Message) ois.readObject();
-                    System.out.println("<Nadeszlo:> " + a.getSource() + " " + sock.getRemoteSocketAddress());
-                    sendMessage("testtesttest");
+                    
+                    notifyListener(a);
+                    //System.out.println("|" + a.getSource() + " | " + sock.getRemoteSocketAddress());
+                    sendMessage(a.getSource()+" :odebrane");
                 }
             } catch (java.net.SocketException e) {
                 System.out.println("Klient " + sock.getRemoteSocketAddress() + " rozłączony");
+                notifyDisconnect(sock.getRemoteSocketAddress().toString());
                 
             } catch (ClassNotFoundException ex) {
-
+                
             } finally {
-                Clients.RemoveClientFromList(sock.getRemoteSocketAddress().toString());
                 ois.close();
                 sock.close();
-
+                
             }
             //zamykanie polaczenia
 
         } catch (IOException ex) {
-            Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, null, ex);
+            
         }
     }
 
+    @Override
+    public void MessageToSend(Message msg) {
+        sendMessage(msg);
+    }
+    
 }

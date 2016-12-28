@@ -6,17 +6,26 @@
 package Server;
 
 import java.io.*;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  *
  * @author Rajtek
  */
 public class Server {
-    // public static final int PORT=50017;
-
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        Clients.WaitForNewClients();
-
+    private static ServerModel createServerModel(){
+        return new ServerModel();
+    }
+    
+    private static ServerControler createServerControler(ServerModel serverModel){
+        return new ServerControler(serverModel);
+    }
+    
+    public static void main(String[] args){
+        ServerControler s =createServerControler(createServerModel());
+        NewClientsWaiter waiter=new NewClientsWaiter();
+        waiter.waitForConnection(s);
+        
     }
 }

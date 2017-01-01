@@ -3,22 +3,31 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Shared;
+package Shared.Messages;
 
-import java.io.Serializable;
+import Shared.Player;
+import Shared.Table;
 import java.util.List;
 
 /**
  *
  * @author Rajtek
  */
-public class MessageGetTablesList extends Message implements Serializable{
+public class MessageLoginSuccessful extends Message{
+    Player player;
     private List<Table> tablesList;
-    public MessageGetTablesList(String source, List<Table> tablesList) {
+    public MessageLoginSuccessful(String source,Player player,List<Table> tablesList) {
         super(source);
+        this.player=player;
         this.tablesList=tablesList;
     }
-    public List<Table> getTablesList(){
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public List<Table> getTablesList() {
         return tablesList;
     }
+    
 }

@@ -26,11 +26,26 @@ public class ServerModel {
     private HashMap<Integer, Table> tablesMap = new HashMap<>();
     
     public ServerModel() {
-        tablesMap.put(1, new Table(1, 6, 150));
+        
+        
+        tablesMap.put(1, new Table(1, 10, 150));
+        
+        
         tablesMap.put(2, new Table(2, 2, 1500));
-        for(int i=3; i<30; i++){
-            tablesMap.put(i, new Table(i,2,100));
+        for(int i=0; i<3; i++){
+            //AddPlayerToList("test"+i);
+            //tablesMap.get(1).PlayerJoin(playersMap.get("test"+i));
+            
         }
+        for(int i=3; i<200; i++){
+            tablesMap.put(i*2, new Table(i*2,2,100));
+            AddPlayerToList("gracz"+i);
+            
+            tablesMap.get(i*2).PlayerJoin(playersMap.get("gracz"+i));
+            
+            
+        }
+        
         
     }
     public void AddPlayerToList(String Login) {
@@ -63,7 +78,7 @@ public class ServerModel {
         tablesMap.put(id, new Table(id, maxplayers, blind));
     }
 
-    public List<Player> GetPlayersOnTable(int id){
+    public Player[] GetPlayersOnTable(int id){
         if (tablesMap.containsKey(id))
             return tablesMap.get(id).getPlayers();
         return null;
@@ -75,5 +90,11 @@ public class ServerModel {
         }
         return tablesList;
     }
+
+    public HashMap<Integer, Table> getTablesMap() {
+        return tablesMap;
+    }
+    
+    
  }
 

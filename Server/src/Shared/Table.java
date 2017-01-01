@@ -16,11 +16,11 @@ import java.util.List;
 public class Table implements Serializable{
     
     private int id;
-    private int numberOfPlayers;
+    private int numberOfPlayers=0;
     private int maxPlayers;
     private int blind;
     private int turn;
-    private List<Player> players;
+    private Player[] players = new Player[10];
 
     
     public Table(int id){
@@ -28,35 +28,51 @@ public class Table implements Serializable{
     }
     public Table(int id, int maxPlayers, int blind){
         this.id=id;
+        
         this.maxPlayers=maxPlayers;
         this.blind=blind;
-        players = new ArrayList();
+        for(int i=0; i<10; i++){
+            players[i]=null;
+        }
     }
     
     public void PlayerJoin(Player player){
         if(!isFull()){
-            players.add(player);
+            for(int i=0; i<10; i++){
+                if (players[i]==null){
+                    players[i]=player;
+                    break;
+                    
+                   
+                }
+            }
             numberOfPlayers++;
-            
+            System.out.println(id);
+            System.out.println(numberOfPlayers);
+            for(int i=0; i<10; i++){
+                if(players[i]==null)System.out.println(i+" null");
+                else
+                System.out.println(i+" "+players[i].getLogin());
+            }
         }
     }
     public boolean isFull(){
-        return players.size() >= maxPlayers; //nadmiarowe sprawdzenie
+        return numberOfPlayers >= maxPlayers; //nadmiarowe sprawdzenie
     }
     public void PlayerLeave(Player player){
-        for(int i=0; i<numberOfPlayers; i++){
-            if (players.get(i)==player){
-                players.remove(i);
+        for(int i=0; i<10; i++){
+            if (players[i]==player){
+                players[i]=null;
                 numberOfPlayers--;
                 break;
             }
         }
     }
     
-    public List<Player> getPlayers(){
+    
+    public Player[] getPlayers(){
         return players;
     }
-    
 
     public int getId() {
         return id;

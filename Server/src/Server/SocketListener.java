@@ -10,6 +10,6 @@ package Server;
  * @author Rajtek
  */
 public interface SocketListener {
-    void getMessage(Shared.Message msg);
+    void getMessage(Shared.Messages.Message msg);
     void disconnected(String client);
 }

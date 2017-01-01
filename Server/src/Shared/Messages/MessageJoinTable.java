@@ -3,23 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Shared;
+package Shared.Messages;
 
 /**
  *
  * @author Rajtek
  */
-public class MessageLogin extends Message {
+public class MessageJoinTable extends Message{
+    private final int id;
     
-    private final String login;
     
-    
-    public MessageLogin(String source, String login) {
+    public MessageJoinTable(String source, int  id) {
         super(source);
-        this.login=login;
+        this.id=id;
     }
-    public String getLogin(){
-        return login;
+    public int getID(){
+        return id;
     }
-    
 }

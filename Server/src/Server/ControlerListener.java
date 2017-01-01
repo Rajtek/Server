@@ -10,6 +10,6 @@ package Server;
  * @author Rajtek
  */
 public interface ControlerListener {
-    public void MessageToSend(Shared.Message msg);
+    public void MessageToSend(Shared.Messages.Message msg);
     
 }

@@ -5,11 +5,14 @@
  */
 package Server;
 
-import Shared.Message;
+import Shared.Messages.Message;
 import java.net.Socket;
 import java.io.*;
+import static java.lang.Thread.sleep;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class ConnectionService implements Runnable, ControlerListener {
@@ -38,6 +41,7 @@ public class ConnectionService implements Runnable, ControlerListener {
         try {
             oos.writeObject(msg);
             System.out.println("Wysyłam: " + msg.getSource());
+            oos.reset();
         } catch (IOException ex) {
             System.err.println(ex);
         }
@@ -49,7 +53,7 @@ public class ConnectionService implements Runnable, ControlerListener {
         listeners.add(toAdd);
     }
     
-    private void notifyListener(Shared.Message msg) {
+    private void notifyListener(Shared.Messages.Message msg) {
         for (SocketListener s : listeners) {
             s.getMessage(msg);
         }
@@ -63,21 +67,35 @@ public class ConnectionService implements Runnable, ControlerListener {
     
 
     @Override
-    public void run() {
+     public void run() {
         try {
             oos = new ObjectOutputStream(sock.getOutputStream());
+            
             System.out.println("Nasluchuje: " + sock.getRemoteSocketAddress());
             
             ObjectInputStream ois = new ObjectInputStream(sock.getInputStream());
             
             try {
                 while (true) {
-                    Shared.Message a;
-                    a = (Shared.Message) ois.readObject();
+                    Shared.Messages.Message a;
+                    a = (Shared.Messages.Message) ois.readObject();
+                    
+                    
+                    //symulacja opóźnienia
+                    
+                    
+//                    try {
+//                        sleep(1000);
+//                    } catch (InterruptedException ex) {
+//                        Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+                    
+                    
                     
                     notifyListener(a);
+                    
                     //System.out.println("|" + a.getSource() + " | " + sock.getRemoteSocketAddress());
-                    sendMessage(a.getSource()+" :odebrane");
+                    //sendMessage(a.getSource()+" :odebrane");
                 }
             } catch (java.net.SocketException e) {
                 System.out.println("Klient " + sock.getRemoteSocketAddress() + " rozłączony");

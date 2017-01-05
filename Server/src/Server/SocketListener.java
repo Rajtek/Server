@@ -11,5 +11,5 @@ package Server;
  */
 public interface SocketListener {
     void getMessage(Shared.Messages.Message msg);
-    void disconnected(String client);
+    void disconnectedClient(String client);
 }

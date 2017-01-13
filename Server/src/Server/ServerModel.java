@@ -5,8 +5,9 @@
  */
 package Server;
 
-import Shared.Model.Player;
-import Shared.Model.Table;
+import Shared.Model.Phrases;
+import Shared.Model.User;
+import Shared.Model.Room;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,106 +18,166 @@ import java.util.List;
  */
 public class ServerModel {
 
-    private HashMap<String, Player> playersMap = new HashMap<>();
-    private HashMap<Integer, Table> tablesMap = new HashMap<>();
-    private HashMap<Player, Table> playerTableMap = new HashMap<>();
+    private HashMap<String, User> usersMap = new HashMap<>();
+    private HashMap<Integer, Room> roomsMap = new HashMap<>();
+    private HashMap<Integer, int[]> drawings = new HashMap<>();
+    private HashMap<User, Room> userRoomMap = new HashMap<>();
+
+    private Phrases phrases = new Phrases("phrases/phrases.txt");
+    private ModelListener listener;
 
     public ServerModel() {
-        
-//        tablesMap.put(1, new Table(1, 10, 150));
+
+//        roomsMap.put(1, new Room(1, 10, 150));
 //
-//        tablesMap.put(2, new Table(2, 2, 1500));
+//        roomsMap.put(2, new Room(2, 2, 1500));
         for (int i = 0; i < 30; i++) {
-            AddTable(150,6);
-//            AddPlayerToList("test"+i);
-//            tablesMap.get(i).PlayerJoin(playersMap.get("test"+i));
-            
+            AddRoom(150, 6);
+//            AddUserToList("test"+i);
+//            roomsMap.get(i).UserJoin(usersMap.get("test"+i));
+
         }
 //        for (int i = 3; i < 200; i++) {
-//            tablesMap.put(i * 2, new Table(i * 2, 2, 100));
-//            AddPlayerToList("gracz" + i);
+//            roomsMap.put(i * 2, new Room(i * 2, 2, 100));
+//            AddUserToList("gracz" + i);
 //
-//            tablesMap.get(i * 2).PlayerJoin(playersMap.get("gracz" + i));
+//            roomsMap.get(i * 2).UserJoin(usersMap.get("gracz" + i));
 //
 //        }
 
     }
 
-    public void AddPlayerToList(String login) {
-
-        playersMap.put(login, new Player(login));
-//        System.out.println("Server.ServerModel.AddPlayerToList()" + login);
+    public void setModelListener(ModelListener listener) {
+        this.listener = listener;
     }
 
-    public void DisconnectedPlayer(String login) {
-//        Integer id = playerTableMap.get(playersMap.get(login));
-//        if(id!=null){
-//            removePlayerFromTable(login);
-//        }
-        removePlayerFromTable(login);
-        playersMap.remove(login);
-        
-        
+    public void AddUserToList(String login) {
+
+        usersMap.put(login, new User(login));
+//        System.out.println("Server.ServerModel.AddUserToList()" + login);
     }
-    public Integer getTableID(String login){
-        try{
-        return playerTableMap.get(playersMap.get(login)).getId();
-        }
-        catch(NullPointerException ex){
+
+    public void DisconnectedUser(String login) {
+        removeUserFromRoom(login);
+        usersMap.remove(login);
+
+    }
+
+    public Integer getRoomIDByLogin(String login) {
+        try {
+            return userRoomMap.get(usersMap.get(login)).getId();
+        } catch (NullPointerException ex) {
             return null;
         }
-        
 
     }
-    public int getNumberOfPlayers() {
-        return playersMap.size();
+
+    public Room getRoomByID(int id) {
+        return roomsMap.get(id);
     }
 
-    public Player getPlayer(String login) {
-        return playersMap.getOrDefault(login, null);
+    public int getNumberOfUsers() {
+        return usersMap.size();
     }
 
-    public void AddTable(int blind, int maxplayers) {
+    public User getUser(String login) {
+        return usersMap.getOrDefault(login, null);
+    }
+
+    public void AddRoom(int blind, int maxusers) {
         int id = 0;
         while (true) {
-            if (tablesMap.containsKey(id)) {
+            if (roomsMap.containsKey(id)) {
                 id++;
             } else {
                 break;
             }
         }
-        tablesMap.put(id, new Table(id, maxplayers, blind));
+        roomsMap.put(id, new Room(id, maxusers));
     }
 
-    public Player[] GetPlayersOnTable(int id) {
-        if (tablesMap.containsKey(id)) {
-            return tablesMap.get(id).getPlayers();
+    public List<User> GetUsersOnRoom(int id) {
+        if (roomsMap.containsKey(id)) {
+            return roomsMap.get(id).getUsers();
         }
         return null;
     }
 
-    public List<Table> GetTablesList() {
-        List<Table> tablesList = new ArrayList();
-        for (Table table : tablesMap.values()) {
-            tablesList.add(table);
+    public List<Room> GetRoomsList() {
+        List<Room> roomsList = new ArrayList();
+        for (Room room : roomsMap.values()) {
+            roomsList.add(room);
         }
-        return tablesList;
+        return roomsList;
     }
 
-    public HashMap<Integer, Table> getTablesMap() {
-        return tablesMap;
+    public HashMap<Integer, Room> getRoomsMap() {
+        return roomsMap;
     }
 
-    public void addPlayerToTable(String login, int id) {
-        Player p = getPlayer(login);
-        tablesMap.get(id).PlayerJoin(p);
-        playerTableMap.put(p, tablesMap.get(id));
+    public void addUserToRoom(String login, int id) {
+        User p = getUser(login);
+        roomsMap.get(id).UserJoin(p);
+        if (roomsMap.get(id).getNumberOfUsers() > 1) {
+            startGameOnTable(id);
+        }
+        userRoomMap.put(p, roomsMap.get(id));
+        listener.userJoined(login, id);
     }
-    public void removePlayerFromTable(String login){
-        Player p = getPlayer(login);
-        Table table = playerTableMap.get(p);
-        if(table!=null) table.PlayerLeave(p);
-        playerTableMap.remove(p);
+
+    private void startGameOnTable(int id) {
+        if (!roomsMap.get(id).isGameStarted()) {
+            roomsMap.get(id).startGame();
+        }
+        String phrase = roomsMap.get(id).getNewPhrase();
+        listener.playerIsDrawing(roomsMap.get(id).getDrawingPlayer(), phrase);
+        
+    }
+
+    public void removeUserFromRoom(String login) {
+        User p = getUser(login);
+        Room room = userRoomMap.get(p);
+        listener.playerLeavedRoom(login, room.getId());
+        if (room != null) {
+            room.UserLeave(p);
+            if(room.getNumberOfUsers()<=1){
+                room.stopGame();
+                listener.gameStopped(room.getId());
+                
+            }
+        }
+        
+        userRoomMap.remove(p);
 
     }
+
+    public int getID(String login) {
+
+        User p = getUser(login);
+        return userRoomMap.get(p).getId();//nie działa
+    }
+
+    public void getAnswer(String login, int id, String answer) {
+        
+        if (roomsMap.get(id).checkAnswer(answer)) {
+            
+            listener.playerIsDrawing(roomsMap.get(id).getDrawingPlayer(), roomsMap.get(id).getNewPhrase());
+            listener.broadcastGoodAnswer(id, login, answer);
+        }
+        else{
+            listener.broadcastAnswer(id, login,answer);
+        }
+        
+
+    }
+
+    void setNewDrawing(int id, int[] data) {
+        drawings.put(id, data);
+        listener.drawingChanged(id, data);
+    }
+
+    public int[] getImageDate(int id) {
+        return drawings.get(id);
+    }
+
 }

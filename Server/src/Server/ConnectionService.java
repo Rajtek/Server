@@ -8,6 +8,7 @@ package Server;
 import Shared.Messages.Message;
 import java.net.Socket;
 import java.io.*;
+import static java.lang.Thread.sleep;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +56,9 @@ public class ConnectionService implements Runnable, ControlerListener {
     }
 
     private void notifyDisconnect(String client) {
+        
         for (SocketListener s : listeners) {
             s.disconnectedClient(sock.getRemoteSocketAddress().toString());
-
         }
     }
 
@@ -80,13 +81,8 @@ public class ConnectionService implements Runnable, ControlerListener {
                     //symulacja opóźnienia
 //                    try {
 //                        sleep(1000);
-//                    } catch (InterruptedException ex) {
-//                        Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
+//                    } catch (InterruptedException ex) {}
                     notifyListener(a);
-
-                    //System.out.println("|" + a.getSource() + " | " + sock.getRemoteSocketAddress());
-                    //sendMessage(a.getSource()+" :odebrane");
                 }
             } catch (java.net.SocketException e) {
                 System.out.println("Klient " + sock.getRemoteSocketAddress() + " rozłączony");

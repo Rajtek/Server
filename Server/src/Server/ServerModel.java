@@ -28,22 +28,10 @@ public class ServerModel {
 
     public ServerModel() {
 
-//        roomsMap.put(1, new Room(1, 10, 150));
-//
-//        roomsMap.put(2, new Room(2, 2, 1500));
         for (int i = 0; i < 30; i++) {
             AddRoom(150, 6);
-//            AddUserToList("test"+i);
-//            roomsMap.get(i).UserJoin(usersMap.get("test"+i));
 
         }
-//        for (int i = 3; i < 200; i++) {
-//            roomsMap.put(i * 2, new Room(i * 2, 2, 100));
-//            AddUserToList("gracz" + i);
-//
-//            roomsMap.get(i * 2).UserJoin(usersMap.get("gracz" + i));
-//
-//        }
 
     }
 
@@ -58,7 +46,16 @@ public class ServerModel {
     }
 
     public void DisconnectedUser(String login) {
+        User p = getUser(login);
+        Room room = userRoomMap.get(p);
         removeUserFromRoom(login);
+        if(room!=null){
+            if(room.isGameStarted()){
+                listener.playerIsDrawing(room.getDrawingPlayer(), room.getNewPhrase());
+            }
+        }
+        
+        
         usersMap.remove(login);
 
     }
@@ -117,12 +114,15 @@ public class ServerModel {
 
     public void addUserToRoom(String login, int id) {
         User p = getUser(login);
-        roomsMap.get(id).UserJoin(p);
-        if (roomsMap.get(id).getNumberOfUsers() > 1) {
-            startGameOnTable(id);
+        Room room = roomsMap.get(id);
+        if(!room.isFull()){
+            room.UserJoin(p);
+            if (room.getNumberOfUsers() > 1) {
+                startGameOnTable(id);
+            }
+            userRoomMap.put(p, room);
+            listener.userJoined(login, id);
         }
-        userRoomMap.put(p, roomsMap.get(id));
-        listener.userJoined(login, id);
     }
 
     private void startGameOnTable(int id) {
@@ -137,8 +137,9 @@ public class ServerModel {
     public void removeUserFromRoom(String login) {
         User p = getUser(login);
         Room room = userRoomMap.get(p);
-        listener.playerLeavedRoom(login, room.getId());
+        
         if (room != null) {
+            listener.playerLeavedRoom(login, room.getId());
             room.UserLeave(p);
             if(room.getNumberOfUsers()<=1){
                 room.stopGame();
@@ -158,11 +159,13 @@ public class ServerModel {
     }
 
     public void getAnswer(String login, int id, String answer) {
+
         
         if (roomsMap.get(id).checkAnswer(answer)) {
-            
-            listener.playerIsDrawing(roomsMap.get(id).getDrawingPlayer(), roomsMap.get(id).getNewPhrase());
             listener.broadcastGoodAnswer(id, login, answer);
+            listener.playerIsDrawing(roomsMap.get(id).getDrawingPlayer(), roomsMap.get(id).getNewPhrase());
+            
+        
         }
         else{
             listener.broadcastAnswer(id, login,answer);
